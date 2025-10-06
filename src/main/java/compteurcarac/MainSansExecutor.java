@@ -2,6 +2,7 @@ package compteurcarac;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainSansExecutor {
@@ -17,18 +18,30 @@ public class MainSansExecutor {
 
                 Instant start = Instant.now();
 
+                
                 // TODO : créer et démarrer un Thread pour chaque tâche
+                List<Thread> threads = new ArrayList();
+                for (CompteurDeCaracteresRunnable tache : taches) {
+                        Thread thread = new Thread(tache);
+                        thread.start();
+                        threads.add(thread);
+                }
 
                 // TODO : attendre la fin de tous les threads avec join()
                 // Tip : vous pouvez au préalable stocker les threads dans une liste
+                for (Thread thread : threads) {
+                        thread.join();
+                }
 
                 int totalCaracteres = 0;
                 Duration sommeDesTemps = Duration.ZERO;
 
-                // TODO : récupérer les résultats de chaque tâche et accumuler
-                // - nombre total de caractères
-                // - somme des temps individuels
-                // - pour faire une somme de Duration, utiliser la méthode plus()
+                for(CompteurDeCaracteresRunnable tache : taches){
+                        ResultatDuCompte resultat = tache.getResultat();
+                        totalCaracteres += resultat.nombreDeCaracteres;
+                        sommeDesTemps = sommeDesTemps.plus(resultat.tempsDeCalcul);
+                }
+        
 
                 System.out.printf("Nombre total d'octets : %d %n", totalCaracteres);
                 System.out.printf("Temps effectif de calcul ~ %d secondes %n",
